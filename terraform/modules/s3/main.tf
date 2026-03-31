@@ -27,5 +27,5 @@ resource "aws_s3_bucket_public_access_block" "media" {
 resource "aws_s3_object" "index_v1" {
   bucket = aws_s3_bucket.media.id
   key    = "v1/index.html"
-  source = "${path.module}/../../web/v1/index.html"
+  source = "${path.module}/../../../web/v1/index.html"
 }
