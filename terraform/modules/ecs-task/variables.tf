@@ -67,10 +67,9 @@ variable "app_port" {
   type        = string
 }
 
-variable "app_secrets_map" {
-  description = "A map mapping environment variable names to SSM parameter names"
-  type        = map(string)
-  default     = {}
+variable "s3_key_name" {
+  description = "The generic parameter name pointing to the static content in SSM"
+  type        = string
 }
 
 variable "sidecar_container_name" {
@@ -84,7 +83,7 @@ variable "sidecar_container_image" {
 }
 
 variable "s3_key_version" {
-  description = "Explicit version for SSM Parameter if required. Currently unused or acts as a cache-buster."
+  description = "The explicit version of the SSM parameter. Bumping this explicitly creates a new task definition."
   type        = string
-  default     = ""
+  default     = "1"
 }

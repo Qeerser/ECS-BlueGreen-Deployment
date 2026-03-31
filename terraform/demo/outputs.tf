@@ -42,3 +42,8 @@ output "ecs_task_definition_family" {
   value       = module.ecs_task.ecs_task_definition_family
   description = "The ECS Task Definition family"
 }
+
+output "ecs_task_definition_arn" {
+  value       = module.ecs_task.ecs_task_definition_arn
+  description = "The ECS Task Definition fully qualified ARN containing the active revision."
+}

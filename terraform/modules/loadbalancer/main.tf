@@ -66,6 +66,10 @@ resource "aws_lb_listener" "http" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [default_action]
+  }
+
 }
 
 resource "aws_lb_listener_rule" "http_blue" {
@@ -90,6 +94,10 @@ resource "aws_lb_listener_rule" "http_blue" {
         weight = 0
       }
     }
+  }
+
+  lifecycle {
+    ignore_changes = [action]
   }
 }
 

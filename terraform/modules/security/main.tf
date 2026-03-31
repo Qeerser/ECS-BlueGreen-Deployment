@@ -63,6 +63,10 @@ resource "aws_iam_role_policy_attachment" "s3_get_object_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "ssm_get_parameter_policy" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+}
 resource "aws_iam_role" "code_deploy_role" {
   name = "${var.name_prefix}-code-deploy-role"
 

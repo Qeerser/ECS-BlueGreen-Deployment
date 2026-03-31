@@ -22,7 +22,7 @@ module "s3" {
 
 module "parameter" {
   source      = "../modules/parameter"
-  s3_key      = "s3://${module.s3.bucket_name}/v1/index.html"
+  s3_key      = "s3://${module.s3.bucket_name}/v${var.app_version}/index.html"
   tags        = local.common_tags
   app_name    = local.app
   environment = local.env
@@ -59,9 +59,8 @@ module "ecs_task" {
   app_container_name      = var.app_container_name
   app_container_image     = module.ecr.app_repository_url
   app_port                = var.app_port
-  app_secrets_map = {
-    "S3_URL" = module.parameter.s3_key_name
-  }
+  s3_key_name             = module.parameter.s3_key_name
+  s3_key_version          = module.parameter.s3_key_version
   sidecar_container_name       = "init-container"
   sidecar_container_image      = module.ecr.sidecar_repository_url
   volume_name                  = "shared-storage"
@@ -73,6 +72,7 @@ module "ecs" {
   name_prefix         = local.prefix
   task_definition_arn = module.ecs_task.ecs_task_definition_arn
   desired_count       = var.ecs_desired_count
+  enable_autoscaling  = var.enable_autoscaling
   subnets             = [module.vpc.subnet_private_app_a_id, module.vpc.subnet_private_app_b_id]
   security_groups     = [module.security.ecs_sg_id]
   load_balancer = {

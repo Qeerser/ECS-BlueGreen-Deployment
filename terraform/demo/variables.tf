@@ -52,3 +52,14 @@ variable "ecs_desired_count" {
   type        = number
   default     = 2
 }
+
+variable "app_version" {
+  description = "The version of the application. Bump this to trigger a new deployment."
+  type        = string
+}
+
+variable "enable_autoscaling" {
+  description = "Enable ECS application autoscaling"
+  type        = bool
+  default     = true
+}

@@ -38,3 +38,27 @@ variable "desired_count" {
   type        = number
   default     = 1
 }
+
+variable "enable_autoscaling" {
+  description = "Flag to enable Auto Scaling for the ECS service"
+  type        = bool
+  default     = false
+}
+
+variable "min_capacity" {
+  description = "Minimum number of tasks to run when Auto Scaling is enabled"
+  type        = number
+  default     = 1
+}
+
+variable "max_capacity" {
+  description = "Maximum number of tasks to run when Auto Scaling is enabled"
+  type        = number
+  default     = 5
+}
+
+variable "cpu_target_tracking_value" {
+  description = "The target CPU utilization percentage for Auto Scaling to maintain"
+  type        = number
+  default     = 70
+}

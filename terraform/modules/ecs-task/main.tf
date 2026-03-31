@@ -16,6 +16,12 @@ resource "aws_ecs_task_definition" "main-task" {
     size_in_gib = 21
   }
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  skip_destroy = true
+
   container_definitions = jsonencode([{
     name       = var.sidecar_container_name
     image      = var.sidecar_container_image
@@ -29,13 +35,16 @@ resource "aws_ecs_task_definition" "main-task" {
       }
     ]
 
-    secrets = [
-      for key, path in var.app_secrets_map : {
-        name      = key
-        valueFrom = "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:parameter${path}"
+    environment = [
+      {
+        name  = "S3_KEY_NAME"
+        value = var.s3_key_name
+      },
+      {
+        name  = "S3_KEY_VERSION"
+        value = var.s3_key_version
       }
     ]
-
     logConfiguration = {
       logDriver = "awslogs"
       options = {
