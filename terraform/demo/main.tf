@@ -64,10 +64,7 @@ module "ecs_task" {
   }
   sidecar_container_name       = "init-container"
   sidecar_container_image      = module.ecr.sidecar_repository_url
-  sidecar_container_command    = ["aws s3 cp $S3_URL /data/index.html"]
-  sidecar_container_entrypoint = ["/bin/sh", "-c"]
   volume_name                  = "shared-storage"
-  s3_key_version               = "" # Empty for now, or use module.parameter.s3_key_version if needed
 }
 
 module "ecs" {

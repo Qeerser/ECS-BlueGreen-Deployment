@@ -20,8 +20,6 @@ resource "aws_ecs_task_definition" "main-task" {
     name       = var.sidecar_container_name
     image      = var.sidecar_container_image
     essential  = false
-    entryPoint = var.sidecar_container_entrypoint
-    command    = var.sidecar_container_command
 
     mountPoints = [
       {

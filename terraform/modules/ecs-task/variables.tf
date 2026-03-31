@@ -83,18 +83,6 @@ variable "sidecar_container_image" {
   type        = string
 }
 
-variable "sidecar_container_command" {
-  description = "The command sequence executed by the sidecar container"
-  type        = list(string)
-  default     = []
-}
-
-variable "sidecar_container_entrypoint" {
-  description = "The entrypoint array overriding the default entrypoint of the sidecar container"
-  type        = list(string)
-  default     = []
-}
-
 variable "s3_key_version" {
   description = "Explicit version for SSM Parameter if required. Currently unused or acts as a cache-buster."
   type        = string
