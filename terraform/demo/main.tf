@@ -29,10 +29,14 @@ module "parameter" {
 }
 
 module "security" {
-  source      = "../modules/security"
-  vpc_id      = module.vpc.vpc_id
-  name_prefix = local.prefix
-  tags        = local.common_tags
+  source            = "../modules/security"
+  vpc_id            = module.vpc.vpc_id
+  name_prefix       = local.prefix
+  aws_region        = var.aws_region
+  aws_account_id    = data.aws_caller_identity.current.account_id
+  s3_bucket_arn     = module.s3.bucket_arn
+  ssm_parameter_arn = module.parameter.s3_key_arn
+  tags              = local.common_tags
 }
 
 module "loadbalancer" {
@@ -73,6 +77,7 @@ module "ecs" {
   task_definition_arn = module.ecs_task.ecs_task_definition_arn
   desired_count       = var.ecs_desired_count
   enable_autoscaling  = var.enable_autoscaling
+  min_capacity        = var.ecs_desired_count
   subnets             = [module.vpc.subnet_private_app_a_id, module.vpc.subnet_private_app_b_id]
   security_groups     = [module.security.ecs_sg_id]
   load_balancer = {

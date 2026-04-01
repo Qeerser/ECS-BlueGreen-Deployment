@@ -13,19 +13,29 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   tags = merge(var.tags, { Name = "${var.name_prefix}-ecs-task-execution-role" })
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_execution_standard" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
+resource "aws_iam_role_policy" "ecs_execution_ecr_policy" {
+  name = "${var.name_prefix}-ecr-read-policy"
+  role = aws_iam_role.ecs_task_execution_role.id
 
-resource "aws_iam_role_policy_attachment" "ecs_execution_ssm_parameter" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_execution_image" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "ecr:GetAuthorizationToken"
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage"
+        ]
+        Resource = "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/${var.name_prefix}/*"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy" "ecs_execution_logs" {
@@ -36,8 +46,12 @@ resource "aws_iam_role_policy" "ecs_execution_logs" {
     Statement = [
       {
         Effect   = "Allow"
-        Action   = "logs:CreateLogGroup"
-        Resource = "*"
+        Action   = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/ecs/${var.name_prefix}*:*"
       }
     ]
   })
@@ -58,14 +72,40 @@ resource "aws_iam_role" "ecs_task_role" {
   tags = merge(var.tags, { Name = "${var.name_prefix}-ecs-task-role" })
 }
 
-resource "aws_iam_role_policy_attachment" "s3_get_object_policy" {
-  role       = aws_iam_role.ecs_task_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+resource "aws_iam_role_policy" "s3_get_object_policy" {
+  name = "${var.name_prefix}-s3-read-policy"
+  role = aws_iam_role.ecs_task_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "s3:GetObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          var.s3_bucket_arn,
+          "${var.s3_bucket_arn}/*"
+        ]
+      }
+    ]
+  })
 }
 
-resource "aws_iam_role_policy_attachment" "ssm_get_parameter_policy" {
-  role       = aws_iam_role.ecs_task_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+resource "aws_iam_role_policy" "ssm_get_parameter_policy" {
+  name = "${var.name_prefix}-ssm-read-policy"
+  role = aws_iam_role.ecs_task_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "ssm:GetParameter"
+        Resource = var.ssm_parameter_arn
+      }
+    ]
+  })
 }
 resource "aws_iam_role" "code_deploy_role" {
   name = "${var.name_prefix}-code-deploy-role"

@@ -1,6 +1,7 @@
 resource "aws_ecr_repository" "app" {
-  name                 = "${var.name_prefix}-app"
+  name                 = "${var.name_prefix}/app"
   image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = true
@@ -10,8 +11,9 @@ resource "aws_ecr_repository" "app" {
 }
 
 resource "aws_ecr_repository" "sidecar" {
-  name                 = "${var.name_prefix}-sidecar"
+  name                 = "${var.name_prefix}/sidecar"
   image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = true

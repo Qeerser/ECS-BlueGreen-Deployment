@@ -9,9 +9,29 @@ variable "vpc_id" {
 }
 
 variable "tags" {
-  description = "Standard tags mapped to the security and IAM resources"
+  description = "A map of tags to assign to the security resources"
   type        = map(string)
   default     = {}
+}
+
+variable "aws_region" {
+  description = "The AWS Region"
+  type        = string
+}
+
+variable "aws_account_id" {
+  description = "The AWS Account ID"
+  type        = string
+}
+
+variable "s3_bucket_arn" {
+  description = "The ARN of the specific S3 bucket to allow read access"
+  type        = string
+}
+
+variable "ssm_parameter_arn" {
+  description = "The ARN of the specific SSM parameter to allow read access"
+  type        = string
 }
 
 variable "app_port" {
